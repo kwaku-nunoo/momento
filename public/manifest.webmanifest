@@ -1,0 +1,27 @@
+{
+  "name": "MOMENTO — Event Photo Sharing",
+  "short_name": "MOMENTO",
+  "description": "Every moment. One place. Shared live event photo galleries with instant QR code access, live guest uploads, untouched original downloads, and offline support.",
+  "start_url": "/",
+  "id": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#F5F2ED",
+  "theme_color": "#F5F2ED",
+  "orientation": "any",
+  "categories": ["photo", "social", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/momento-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/momento-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

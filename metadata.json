@@ -1,0 +1,6 @@
+{
+  "name": "MOMENTO",
+  "description": "Every moment. One place. Mobile-first event photo sharing with instant QR code access, live guest uploads, untouched original downloads, and host controls.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
