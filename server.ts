@@ -103,9 +103,13 @@ interface DatabaseSchema {
   photos: MomentoPhotoRecord[];
 }
 
-const DATA_DIR = path.join(process.cwd(), 'data');
-const UPLOADS_DIR = path.join(process.cwd(), 'uploads');
+const IS_VERCEL = process.env.VERCEL === '1';
+const RUNTIME_DIR = IS_VERCEL ? path.join('/tmp', 'momento') : process.cwd();
+const DATA_DIR = path.join(RUNTIME_DIR, 'data');
+const UPLOADS_DIR = path.join(RUNTIME_DIR, 'uploads');
 const DB_FILE = path.join(DATA_DIR, 'momento-db.json');
+const SEED_DB_FILE = path.join(process.cwd(), 'data', 'momento-db.json');
+const SEED_UPLOADS_DIR = path.join(process.cwd(), 'uploads');
 
 // Ensure directories exist
 if (!fs.existsSync(DATA_DIR)) {
@@ -115,6 +119,22 @@ if (!fs.existsSync(UPLOADS_DIR)) {
   fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 }
 
+function seedRuntimeUploads(sourceDir: string, targetDir: string) {
+  if (!IS_VERCEL || !fs.existsSync(sourceDir)) return;
+  fs.mkdirSync(targetDir, { recursive: true });
+  for (const entry of fs.readdirSync(sourceDir, { withFileTypes: true })) {
+    const sourcePath = path.join(sourceDir, entry.name);
+    const targetPath = path.join(targetDir, entry.name);
+    if (entry.isDirectory()) {
+      seedRuntimeUploads(sourcePath, targetPath);
+    } else if (!fs.existsSync(targetPath)) {
+      fs.copyFileSync(sourcePath, targetPath);
+    }
+  }
+}
+
+seedRuntimeUploads(SEED_UPLOADS_DIR, UPLOADS_DIR);
+
 // In-memory + file persistence DB helper
 let db: DatabaseSchema = { events: [], photos: [] };
 
@@ -123,6 +143,10 @@ function loadDatabase(): DatabaseSchema {
     if (fs.existsSync(DB_FILE)) {
       const content = fs.readFileSync(DB_FILE, 'utf-8');
       db = JSON.parse(content);
+    } else if (IS_VERCEL && fs.existsSync(SEED_DB_FILE)) {
+      const content = fs.readFileSync(SEED_DB_FILE, 'utf-8');
+      db = JSON.parse(content);
+      saveDatabase();
     } else {
       db = { events: [], photos: [] };
       saveDatabase();

@@ -19,4 +19,6 @@ View your app in AI Studio: https://ai.studio/apps/1e7fd67a-a48b-4cda-ad17-297af
 3. Run the app:
    `npm run dev`
 
+For Vercel deployment, configure an external persistent database and file store for production event data. The included serverless fallback uses temporary instance storage for development and smoke testing only.
+
 To test QR codes with a phone on the same Wi-Fi network, open the app on your computer at `http://localhost:3000`. The QR code automatically uses your computer's local network address. Keep the phone and computer on the same Wi-Fi network, and allow incoming connections if macOS asks.
