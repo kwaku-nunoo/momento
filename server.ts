@@ -13,6 +13,7 @@ sharp.concurrency(1);
 sharp.cache({ memory: 50, files: 20, items: 100 });
 
 const archiver = (archiverModule as any).default || archiverModule;
+const PORT = 3000;
 
 // --- Security Helper Functions ---
 
@@ -346,9 +347,8 @@ async function seedDemoPhotosIfEmpty() {
   saveDatabase();
 }
 
-async function startServer() {
+export async function createApp() {
   const app = express();
-  const PORT = 3000;
 
   // 1. Security Headers Middleware
   app.use((_req, res, next) => {
@@ -1440,11 +1440,18 @@ async function startServer() {
     });
   }
 
+  return app;
+}
+
+async function startServer() {
+  const app = await createApp();
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`MOMENTO server running on http://localhost:${PORT}`);
   });
 }
 
-startServer().catch(err => {
-  console.error('Failed to start server:', err);
-});
+if (process.env.VERCEL !== '1') {
+  startServer().catch(err => {
+    console.error('Failed to start server:', err);
+  });
+}
