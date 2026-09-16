@@ -2,17 +2,14 @@ import express from 'express';
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
-import { createServer as createViteServer } from 'vite';
 import multer from 'multer';
 import sharp from 'sharp';
-import * as archiverModule from 'archiver';
 import { randomUUID, timingSafeEqual } from 'crypto';
 
 // Limit sharp to single-thread concurrency and configure cache to prevent CPU starvation
 sharp.concurrency(1);
 sharp.cache({ memory: 50, files: 20, items: 100 });
 
-const archiver = (archiverModule as any).default || archiverModule;
 const PORT = 3000;
 
 // --- Security Helper Functions ---
@@ -349,6 +346,8 @@ async function seedDemoPhotosIfEmpty() {
 
 export async function createApp() {
   const app = express();
+  const archiverModule = await import('archiver');
+  const archiver = (archiverModule as any).default || archiverModule;
 
   // 1. Security Headers Middleware
   app.use((_req, res, next) => {
@@ -1411,6 +1410,7 @@ export async function createApp() {
 
   // Vite middleware for development vs static build for production
   if (process.env.NODE_ENV !== 'production') {
+    const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: 'spa',
